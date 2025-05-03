@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Carousel Section -->
+<div class="mb-10">
+  <div class="overflow-hidden rounded-xl shadow-sm">
+    <div class="grid grid-cols-1 md:grid-cols-3">
+      {% for prayer in featured_prayers %}
+        <div class="bg-white p-6 border-r border-gray-200">
+          <h2 class="text-lg font-semibold">{{ prayer.title }}</h2>
+          <p class="text-sm text-gray-600 mt-2">{{ prayer.content|truncatewords:20 }}</p>
+          <a href="{% url 'prayer_detail' prayer.id %}" class="text-indigo-600 text-sm font-medium mt-3 inline-block">Read More →</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Grid Section -->
+<section>
+  <h3 class="text-xl font-bold mb-4">All Prayers</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for prayer in prayers %}
+      <div class="bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition">
+        <h4 class="text-md font-semibold text-gray-800">{{ prayer.title }}</h4>
+        <p class="text-sm text-gray-600 mt-2">{{ prayer.content|truncatewords:18 }}</p>
+        <div class="text-xs text-gray-400 mt-3">
+          Posted by {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}
+        </div>
+        <a href="{% url 'prayer_detail' prayer.id %}" class="block mt-3 text-sm text-indigo-500 hover:text-indigo-700">View Details</a>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
