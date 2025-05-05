@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 class PrayerRequest(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     student_name = models.CharField(max_length=100)
-    ministry_group = models.CharField(max_length=100, blank=True, null=True)  # Optional
+    ministry_group = models.CharField(max_length=100, blank=True, null=True)  
     status = models.CharField(max_length=100, blank=True, null=True)
     content = models.TextField()  # The actual prayer request
     date_posted = models.DateTimeField(auto_now_add=True)

@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 
+
+{% if user.is_authenticated %}
+  <div class="mb-6 text-right">
+    <a href="{% url 'submit_prayer' %}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md shadow hover:bg-indigo-700 transition">
+      ➕ Add New Prayer
+    </a>
+  </div>
+{% endif %}
+
 <!-- Carousel Section -->
 <div class="mb-10">
   <div class="overflow-hidden rounded-xl shadow-sm">
@@ -32,5 +41,53 @@
     {% endfor %}
   </div>
 </section>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".pray-button");
+
+    buttons.forEach(button => {
+      button.addEventListener("click", async () => {
+        const id = button.dataset.id;
+
+        try {
+          const response = await fetch(`/pray/${id}/`, {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": getCookie("csrftoken"),
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await response.json();
+
+          // Update count
+          document.getElementById(`count-${id}`).innerText = data.prayed_count;
+        } catch (err) {
+          alert("Failed to submit prayer");
+          console.error(err);
+        }
+      });
+    });
+
+    // Get CSRF token from cookie
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === name + "=") {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+  });
+</script>
 
 {% endblock %}

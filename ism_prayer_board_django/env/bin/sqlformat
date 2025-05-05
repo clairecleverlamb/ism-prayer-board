@@ -1,4 +1,4 @@
-#!/Users/clrc/ism-prayer-board/ism-prayer-board/ism_prayer_board_django/env/bin/python3
+#!/Users/clrc/ism-prayer-board/ism-prayer-board/ism_prayer_board_django/env/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
