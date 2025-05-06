@@ -1,92 +1,119 @@
 {% extends 'base.html' %}
+{% load static %}
+
+<div id="toastContainer" class="position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>
+
 {% block content %}
 
-
-{% if user.is_authenticated %}
-  <div class="mb-6 text-right">
-    <a href="{% url 'submit_prayer' %}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md shadow hover:bg-indigo-700 transition">
-      ➕ Add New Prayer
-    </a>
+<!-- Toast area for messages -->
+{% if messages %}
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
+    {% for message in messages %}
+      <div class="toast show align-items-center text-white bg-success border-0 mb-2" role="alert">
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 {% endif %}
 
-<!-- Carousel Section -->
-<div class="mb-10">
-  <div class="overflow-hidden rounded-xl shadow-sm">
-    <div class="grid grid-cols-1 md:grid-cols-3">
-      {% for prayer in featured_prayers %}
-        <div class="bg-white p-6 border-r border-gray-200">
-          <h2 class="text-lg font-semibold">{{ prayer.title }}</h2>
-          <p class="text-sm text-gray-600 mt-2">{{ prayer.content|truncatewords:20 }}</p>
-          <a href="{% url 'prayer_detail' prayer.id %}" class="text-indigo-600 text-sm font-medium mt-3 inline-block">Read More →</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="fw-bold">All Prayers</h2>
+  {% if user.is_authenticated %}
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prayerModal">
+      ➕ Add Prayer
+    </button>
+  {% endif %}
+</div>
+
+<!-- Bootstrap Modal for New Prayer -->
+<div class="modal fade" id="prayerModal" tabindex="-1" aria-labelledby="prayerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" id="prayerForm">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="prayerModalLabel"> Submit a Prayer Request</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-      {% endfor %}
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Student Name</label>
+            {{ form.student_name }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mentor (optional)</label>
+            {{ form.ministry_group }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status (e.g. Academic / Work)</label>
+            {{ form.status }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Prayer Request</label>
+            {{ form.content }}
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Submit Prayer</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
-<!-- Grid Section -->
-<section>
-  <h3 class="text-xl font-bold mb-4">All Prayers</h3>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {% for prayer in prayers %}
-      <div class="bg-white p-5 rounded-xl shadow-sm hover:shadow-md transition">
-        <h4 class="text-md font-semibold text-gray-800">{{ prayer.title }}</h4>
-        <p class="text-sm text-gray-600 mt-2">{{ prayer.content|truncatewords:18 }}</p>
-        <div class="text-xs text-gray-400 mt-3">
-          Posted by {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}
-        </div>
-        <a href="{% url 'prayer_detail' prayer.id %}" class="block mt-3 text-sm text-indigo-500 hover:text-indigo-700">View Details</a>
-      </div>
-    {% endfor %}
-  </div>
-</section>
+
+<!-- Grid of prayer cards -->
+<div id="prayerCards">
+  {% include 'prayers/prayer_list_partial.html' %}
+</div>
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const buttons = document.querySelectorAll(".pray-button");
+  $(document).ready(function () {
+    $('#prayerForm').on('submit', function (e) {
+      e.preventDefault();
+      const formData = $(this).serialize();
 
-    buttons.forEach(button => {
-      button.addEventListener("click", async () => {
-        const id = button.dataset.id;
+      $.ajax({
+        url: "{% url 'create_prayer_ajax' %}",
+        method: "POST",
+        data: formData,
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        success: function (data) {
+          $('#prayerModal').modal('hide');
 
-        try {
-          const response = await fetch(`/pray/${id}/`, {
-            method: "POST",
-            headers: {
-              "X-CSRFToken": getCookie("csrftoken"),
-              "Content-Type": "application/json",
-            },
+          // Clear form fields
+          $('#prayerForm')[0].reset();
+
+          // Show toast
+          const toastHtml = `
+            <div class="toast align-items-center text-white bg-success border-0 show mb-2" role="alert">
+              <div class="d-flex">
+                <div class="toast-body">Prayer added successfully!</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+              </div>
+            </div>`;
+          $('#toastContainer').append(toastHtml);
+          
+          $.get("{% url 'refresh_prayer_list' %}", function (data) {
+            $('#prayerCards').html(data.html);
           });
-
-          const data = await response.json();
-
-          // Update count
-          document.getElementById(`count-${id}`).innerText = data.prayed_count;
-        } catch (err) {
-          alert("Failed to submit prayer");
-          console.error(err);
-        }
+        },
+        error: function () {
+          alert("Something went wrong.");
+        },
       });
     });
-
-    // Get CSRF token from cookie
-    function getCookie(name) {
-      let cookieValue = null;
-      if (document.cookie && document.cookie !== "") {
-        const cookies = document.cookie.split(";");
-
-        for (let i = 0; i < cookies.length; i++) {
-          const cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) === name + "=") {
-            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-            break;
-          }
-        }
-      }
-      return cookieValue;
-    }
   });
 </script>
 

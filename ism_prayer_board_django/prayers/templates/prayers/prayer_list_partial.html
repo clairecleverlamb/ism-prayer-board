@@ -1,0 +1,19 @@
+
+<div class="row" id="prayerCards">
+    {% for prayer in prayers %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">{{ prayer.student_name }}</h5>
+            <p class="card-text text-muted small">{{ prayer.ministry_group }} | {{ prayer.status }}</p>
+            <p class="card-text">{{ prayer.content|truncatewords:20 }}</p>
+          </div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+            <small class="text-muted">By {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}</small>
+            <span class="badge bg-primary">{{ prayer.prayed_count }}</span>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+</div>
+  

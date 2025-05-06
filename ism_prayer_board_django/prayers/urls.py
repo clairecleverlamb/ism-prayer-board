@@ -10,4 +10,6 @@ urlpatterns = [
     path("signup/", views_auth.signup_view, name="signup"),
     path("signin/", views_auth.signin_view, name="signin"),
     path("signout/", views_auth.signout_view, name="signout"),
+    path('submit-ajax/', views.create_prayer_ajax, name='create_prayer_ajax'),
+    path('refresh-prayers/', views.refresh_prayer_list, name='refresh_prayer_list'),
 ]
