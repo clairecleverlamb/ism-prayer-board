@@ -51,33 +51,6 @@ def create_prayer_ajax(request):
     return JsonResponse({'error': 'Invalid form data'}, status=400)
 
 
-@login_required
-def edit_prayer(request, pk):
-    prayer = get_object_or_404(PrayerRequest, pk=pk)
-    if request.user != prayer.user and not request.user.is_superuser:
-        return HttpResponseForbidden("You are not allowed to edit this prayer.")
-
-    if request.method == 'POST':
-        form = PrayerRequestForm(request.POST, instance=prayer)
-        if form.is_valid():
-            form.save()
-            return redirect('home')
-    else:
-        form = PrayerRequestForm(instance=prayer)
-    return render(request, 'prayers/edit.html', {'form': form, 'prayer': prayer})
-
-
-@login_required
-def delete_prayer(request, pk):
-    prayer = get_object_or_404(PrayerRequest, pk=pk)
-    if request.user != prayer.user and not request.user.is_superuser:
-        return HttpResponseForbidden("You are not allowed to delete this prayer.")
-
-    if request.method == 'POST':
-        prayer.delete()
-        return redirect('home')
-    return render(request, 'prayers/delete_confirm.html', {'prayer': prayer})
-
 
 @login_required
 def refresh_prayer_list(request):
@@ -97,3 +70,37 @@ def pray_for_request(request, pk):
     prayer.prayed_count += 1
     prayer.save()
     return JsonResponse({'prayed_count': prayer.prayed_count})
+
+
+
+@login_required
+def edit_prayer(request, pk):
+    prayer = get_object_or_404(PrayerRequest, pk=pk)
+
+    if request.user != prayer.user and not request.user.is_superuser:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = PrayerRequestForm(request.POST, instance=prayer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Prayer updated successfully.")
+            return redirect('home')
+    else:
+        form = PrayerRequestForm(instance=prayer)
+
+    return render(request, 'prayers/edit_prayer.html', {'form': form, 'prayer': prayer})
+
+@login_required
+def delete_prayer(request, pk):
+    prayer = get_object_or_404(PrayerRequest, pk=pk)
+
+    if request.user != prayer.user and not request.user.is_superuser:
+        return redirect('home')
+
+    if request.method == 'POST':
+        prayer.delete()
+        messages.success(request, "Prayer deleted successfully.")
+        return redirect('home')
+
+    return render(request, 'prayers/delete_confirm.html', {'prayer': prayer})
