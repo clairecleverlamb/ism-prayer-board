@@ -119,7 +119,7 @@
         },
         success: function (res) {
           $(`#pray-count-${prayerId}`).text(res.prayed_count);
-          $(`button[data-id="${prayerId}"]`).removeClass('btn-outline-success').addClass('btn-success').text('🙏 Prayed!');
+          $(`button[data-id="${prayerId}"]`).removeClass('btn-outline-success').addClass('btn-success').text('Prayed!');
         },
         error: function () {
           alert('Error recording prayer.');

@@ -1,40 +1,44 @@
 <div class="row" id="prayerCards">
     {% for prayer in prayers %}
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card shadow-sm h-100 border-0">
           <div class="card-body">
-            <h5 class="card-title" contenteditable="true" data-id="{{ prayer.id }}" data-field="student_name">
-              {{ prayer.student_name }}
-            </h5>
-            <p class="card-text text-muted small" contenteditable="true" data-id="{{ prayer.id }}" data-field="ministry_group">
-              {{ prayer.ministry_group }} | {{ prayer.status }}
-            </p>
-            <p class="card-text" contenteditable="true" data-id="{{ prayer.id }}" data-field="content">
-              {{ prayer.content|truncatewords:20 }}
-            </p>
+            <h5 class="card-title fw-bold mb-1">{{ prayer.student_name }}</h5>
+            <p class="text-muted mb-2 small">{{ prayer.ministry_group }} | {{ prayer.status }}</p>
+            <p class="card-text">{{ prayer.content|truncatewords:20 }}</p>
           </div>
-  
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <small class="text-muted">By {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}</small>
+          <div class="card-footer d-flex justify-content-between align-items-center bg-light border-top-0">
+            <div class="small text-muted">
+              By {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}
+            </div>
             <div class="d-flex align-items-center gap-2">
+              <!-- Prayed count badge -->
               <span id="pray-count-{{ prayer.id }}" class="badge bg-primary">{{ prayer.prayed_count }}</span>
   
+              <!-- Pray button -->
               {% if user.is_authenticated %}
-                <button class="btn btn-sm btn-outline-success pray-btn" data-id="{{ prayer.id }}"> Pray</button>
+                <button class="btn btn-sm btn-outline-success pray-btn" data-id="{{ prayer.id }}" title="Pray">
+                  <i class="fas fa-hands-praying"></i>
+                </button>
               {% else %}
-                <button class="btn btn-sm btn-secondary" disabled>Login to Pray</button>
+                <button class="btn btn-sm btn-secondary" disabled title="Login to pray">
+                  <i class="fas fa-hands-praying"></i>
+                </button>
               {% endif %}
   
+              <!-- Edit/Delete buttons -->
               {% if user == prayer.user or user.is_superuser %}
-                <div class="mt-2">
-                    <a href="{% url 'edit_prayer' prayer.id %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                    <a href="{% url 'delete_prayer' prayer.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
-                </div>
+                <a href="{% url 'edit_prayer' prayer.id %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                  <i class="fas fa-pen"></i>
+                </a>
+                <a href="{% url 'delete_prayer' prayer.id %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </a>
               {% endif %}
-              </div>
+            </div>
           </div>
         </div>
       </div>
     {% endfor %}
-</div>
+  </div>
   
