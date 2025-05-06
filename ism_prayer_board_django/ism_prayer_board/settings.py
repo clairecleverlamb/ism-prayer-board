@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'prayers',
     'tailwind',
     'theme',
+    'widget_tweaks',
 ]
 
 
