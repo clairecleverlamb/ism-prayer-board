@@ -12,4 +12,6 @@ urlpatterns = [
     path("signout/", views_auth.signout_view, name="signout"),
     path('submit-ajax/', views.create_prayer_ajax, name='create_prayer_ajax'),
     path('refresh-prayers/', views.refresh_prayer_list, name='refresh_prayer_list'),
+    path('prayer/<int:pk>/edit/', views.edit_prayer, name='edit_prayer'),
+    path('prayer/<int:pk>/delete/', views.delete_prayer, name='delete_prayer'),
 ]
