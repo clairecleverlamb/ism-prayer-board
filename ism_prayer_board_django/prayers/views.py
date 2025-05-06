@@ -7,6 +7,7 @@ from .forms import PrayerRequestForm
 from django.views.decorators.http import require_POST
 from django.contrib import messages
 from django.template.loader import render_to_string
+from django.http import HttpResponseForbidden
 
 def home_view(request):
     featured_prayers = PrayerRequest.objects.order_by('-prayed_count')[:3]
@@ -49,10 +50,39 @@ def create_prayer_ajax(request):
         })
     return JsonResponse({'error': 'Invalid form data'}, status=400)
 
+
+@login_required
+def edit_prayer(request, pk):
+    prayer = get_object_or_404(PrayerRequest, pk=pk)
+    if request.user != prayer.user and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not allowed to edit this prayer.")
+
+    if request.method == 'POST':
+        form = PrayerRequestForm(request.POST, instance=prayer)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = PrayerRequestForm(instance=prayer)
+    return render(request, 'prayers/edit.html', {'form': form, 'prayer': prayer})
+
+
+@login_required
+def delete_prayer(request, pk):
+    prayer = get_object_or_404(PrayerRequest, pk=pk)
+    if request.user != prayer.user and not request.user.is_superuser:
+        return HttpResponseForbidden("You are not allowed to delete this prayer.")
+
+    if request.method == 'POST':
+        prayer.delete()
+        return redirect('home')
+    return render(request, 'prayers/delete_confirm.html', {'prayer': prayer})
+
+
 @login_required
 def refresh_prayer_list(request):
     prayers = PrayerRequest.objects.order_by('-date_posted')
-    html = render_to_string('prayers/prayer_list_partial.html', {'prayers': prayers})
+    html = render_to_string('prayers/prayer_list_partial.html', {'prayers': prayers, 'user': request.user})
     return JsonResponse({'html': html})
 
 @login_required
