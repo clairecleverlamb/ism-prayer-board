@@ -118,6 +118,11 @@
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
               </div>
             </div>`);
+            setTimeout(() => {
+              $('.toast').fadeOut('slow', function() {
+                $(this).remove();
+              });
+            }, 4000);
           location.reload();
         },
         error: function () {
