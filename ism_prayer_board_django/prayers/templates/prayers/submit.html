@@ -9,13 +9,13 @@
       <form method="POST">
         {% csrf_token %}
         <div class="mb-3">
-          <label for="studentName" class="form-label">Student Name</label>
-          <input type="text" name="studentName" id="studentName" class="form-control" value="{{ form.studentName.value|default:'' }}">
+          <label for="student_name" class="form-label">Student Name</label>
+          <input type="text" name="student_name" id="student_name" class="form-control" value="{{ form.student_name.value|default:'' }}">
         </div>
 
         <div class="mb-3">
-          <label for="ministryGroup" class="form-label">Mentor (optional)</label>
-          <input type="text" name="ministryGroup" id="ministryGroup" class="form-control" value="{{ form.ministryGroup.value|default:'' }}">
+          <label for="ministry_group" class="form-label">Mentor (optional)</label>
+          <input type="text" name="ministry_group" id="ministry_group" class="form-control" value="{{ form.ministry_group.value|default:'' }}">
         </div>
 
         <div class="mb-3">
