@@ -26,10 +26,12 @@
               {% endif %}
   
               {% if user == prayer.user or user.is_superuser %}
-                <button class="btn btn-sm btn-outline-primary edit-btn" data-id="{{ prayer.id }}"> Save</button>
-                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ prayer.id }}"> Delete</button>
+                <div class="mt-2">
+                    <a href="{% url 'edit_prayer' prayer.id %}" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                    <a href="{% url 'delete_prayer' prayer.id %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                </div>
               {% endif %}
-            </div>
+              </div>
           </div>
         </div>
       </div>
