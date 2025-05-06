@@ -9,11 +9,22 @@
             <p class="card-text">{{ prayer.content|truncatewords:20 }}</p>
           </div>
           <div class="card-footer d-flex justify-content-between align-items-center">
-            <small class="text-muted">By {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}</small>
-            <span class="badge bg-primary">{{ prayer.prayed_count }}</span>
+            <small class="text-muted">
+              By {{ prayer.user.username }} • {{ prayer.date_posted|date:"M d, Y" }}
+            </small>
+            <div class="d-flex align-items-center gap-2">
+              <span id="pray-count-{{ prayer.id }}" class="badge bg-primary">{{ prayer.prayed_count }}</span>
+              {% if user.is_authenticated %}
+                <button class="btn btn-sm btn-outline-success pray-btn" data-id="{{ prayer.id }}">
+                   Pray
+                </button>
+              {% else %}
+                <button class="btn btn-sm btn-secondary" disabled>Login to Pray</button>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     {% endfor %}
-</div>
-  
+  </div>
+    
