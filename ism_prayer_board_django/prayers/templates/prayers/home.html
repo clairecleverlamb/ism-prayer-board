@@ -23,9 +23,13 @@
 
 <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
   <div>
-    <h2 class="fw-semibold display-6 mb-1">All Prayers</h2>
-    <p class="text-muted small mb-0">Showing <span class="text-primary fw-bold">{{ prayers|length }}</span>
-      prayer{{ prayers|length|pluralize }}</p>
+    <h2 class="fw-normal text-secondary fs-3 mb-1" style="letter-spacing: 0.5px;">ALL PRAYERS</h2>
+    <p class="text-muted mb-3">
+      <small>
+         Showing <span class="text-primary fw-bold">{{ prayers|length }}</span>
+        prayer{{ prayers|length|pluralize }}
+      </small>
+    </p>
   </div>
 
   <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">

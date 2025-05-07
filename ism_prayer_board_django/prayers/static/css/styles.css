@@ -1,21 +1,22 @@
-
-#prayerCards.grid-view {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-  }
-  
-  #prayerCards.carousel-view {
-    display: flex;
+#prayerCards.carousel-view {
+    flex-wrap: nowrap !important;
     overflow-x: auto;
-    gap: 1rem;
     scroll-snap-type: x mandatory;
     padding-bottom: 1rem;
   }
   
-  #prayerCards.carousel-view .card {
-    min-width: 300px;
-    flex-shrink: 0;
+  #prayerCards.carousel-view .prayer-card-wrapper {
+    flex: 0 0 300px;
     scroll-snap-align: start;
+  }
+  
+  #prayerCards.carousel-view .row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+  
+  #prayerCards.grid-view {
+    display: flex;
+    flex-wrap: wrap;
   }
   
