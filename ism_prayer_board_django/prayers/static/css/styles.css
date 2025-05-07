@@ -1,0 +1,21 @@
+
+#prayerCards.grid-view {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+  
+  #prayerCards.carousel-view {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 1rem;
+  }
+  
+  #prayerCards.carousel-view .card {
+    min-width: 300px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+  

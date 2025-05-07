@@ -8,27 +8,41 @@
 
 <!-- Toast Messages -->
 {% if messages %}
-  <div class="position-fixed top-0 end-0 p-3" style="z-index: 11">
-    {% for message in messages %}
-      <div class="toast show align-items-center text-white bg-success border-0 mb-2" role="alert">
-        <div class="d-flex">
-          <div class="toast-body">
-            {{ message }}
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+  {% for message in messages %}
+    <div class="toast show align-items-center text-white bg-success border-0 mb-2" role="alert">
+      <div class="d-flex">
+        <div class="toast-body">
+          {{ message }}
         </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
       </div>
-    {% endfor %}
-  </div>
+    </div>
+  {% endfor %}
 {% endif %}
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="fw-bold">All Prayers</h2>
-  {% if user.is_authenticated %}
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prayerModal">
-      ➕ Add Prayer
-    </button>
-  {% endif %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3">
+  <div>
+    <h2 class="fw-semibold display-6 mb-1">All Prayers</h2>
+    <p class="text-muted small mb-0">Showing <span class="text-primary fw-bold">{{ prayers|length }}</span>
+      prayer{{ prayers|length|pluralize }}</p>
+  </div>
+
+  <div class="d-flex flex-wrap gap-2 mt-3 mt-md-0">
+    {% if user.is_authenticated %}
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#prayerModal">
+        <i class="fas fa-plus-circle me-1"></i> Add Prayer
+      </button>
+    {% endif %}
+    <div class="btn-group" role="group">
+      <button id="gridViewBtn" class="btn btn-outline-secondary active">
+        <i class="fas fa-th"></i>
+      </button>
+      <button id="carouselViewBtn" class="btn btn-outline-secondary">
+        <i class="fas fa-sliders-h"></i>
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Form -->
@@ -68,8 +82,10 @@
   </div>
 </div>
 
+
+
 <!-- Prayer Cards -->
-<div id="prayerCards">
+<div id="prayerCards" class="grid-view">
     {% include 'prayers/prayer_list_partial.html' %}
 </div> 
 
@@ -109,6 +125,18 @@
       });
     });
 
+    $('#gridViewBtn').on('click', function () {
+      $('#prayerCards').removeClass('carousel-view').addClass('grid-view');
+      $(this).addClass('active');
+      $('#carouselViewBtn').removeClass('active');
+    });
+
+    $('#carouselViewBtn').on('click', function () {
+      $('#prayerCards').removeClass('grid-view').addClass('carousel-view');
+      $(this).addClass('active');
+      $('#gridViewBtn').removeClass('active');
+    });
+
     $('.pray-btn').on('click', function () {
       const prayerId = $(this).data('id');
       $.ajax({
@@ -127,6 +155,13 @@
       });
     });
   });
+
+
+  setTimeout(() => {
+    $('.toast').fadeOut('slow', function () {
+      $(this).remove();
+    });
+  }, 2000);
 </script>
 
 {% endblock %}
