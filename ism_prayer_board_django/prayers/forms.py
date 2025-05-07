@@ -21,23 +21,29 @@ class PrayerRequestForm(forms.ModelForm):
         }
 
 class CustomSignupForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Your Acts2 Email'
+    }))
+
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2']
-        widgets = {
-            'username': forms.EmailInput(attrs={
-                'class': 'form-control border border-primary rounded px-3 py-2',
-                'placeholder': 'Enter your Acts2 email'
-            }),
-            'password1': forms.PasswordInput(attrs={
-                'class': 'form-control border border-primary rounded px-3 py-2',
-                'placeholder': 'Create password'
-            }),
-            'password2': forms.PasswordInput(attrs={
-                'class': 'form-control border border-primary rounded px-3 py-2',
-                'placeholder': 'Confirm password'
-            }),
-        }
+        fields = ['email', 'password1', 'password2'] 
+
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if not email.endswith('@acts2.network'):
+            raise forms.ValidationError("Only Acts2 Network emails allowed.")
+        return email
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        email = self.cleaned_data['email']
+        user.username = email  
+        user.email = email
+        if commit:
+            user.save()
+        return user
 
 class CustomSigninForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):

@@ -11,26 +11,20 @@ ALLOWED_EMAIL_DOMAIN = "acts2.network"
 ADMIN_EMAILS = ["claire.chen@acts2.network", "shufei.lei@acts2.network", "karen.lei@acts2.network"]
 
 #signup View
+ALLOWED_EMAIL_DOMAIN = "acts2.network"
+
 def signup_view(request):
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
-        email = request.POST.get("email")
-
-        # Check email domain
-        if email and not email.endswith(f"@{ALLOWED_EMAIL_DOMAIN}"):
-            messages.error(request, "Only Acts2 Network emails are allowed.")
-            return redirect("signup")
-
+        form = CustomSignupForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.username = email  
-            user.email = email
-            user.is_staff = email in ADMIN_EMAILS
-            user.save()
+            user = form.save()
+            if user.email in ADMIN_EMAILS:
+                user.is_staff = True
+                user.save()
             login(request, user)
             return redirect("home")
     else:
-        form = UserCreationForm()
+        form = CustomSignupForm()
     return render(request, "auth/signup.html", {"form": form})
 
 # Signin View
